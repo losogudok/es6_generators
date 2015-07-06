@@ -1,16 +1,15 @@
-function* flat(arr) {
-	for (var i = 0; i < arr.length; i++) {
-		if (Array.isArray(arr[i])) {
-			yield* flat(arr[i]);
-		}
-		else {
-			yield arr[i];
-		}
-	}
+function* upper(items) {
+  	for (var i = 0; i < items.length; i++) {
+    	try {
+      		yield items[i].toUpperCase();
+    	} catch (e) {
+      		yield null;
+    	}
+  	}
 }
 
-var A = [1, [2, [3, 4], 5], 6];
-for (var f of flat(A)) {
-    console.log( f );
-}
+var bad_items = ['a', 'B', 1, 'c'];
 
+for (var item of upper(bad_items)) {
+  	console.log(item);
+}
