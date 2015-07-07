@@ -1,30 +1,30 @@
-var fs = require('fs');
-
-function run (generator) {
-  var it = generator(callbcack);
-
-  function callbcack(err, result) {
-    if (err) {
-      it.throw(err);
-    }
-    else {
-      it.next(result);
-    }
-  }
-
-  it.next();
+function askFoo () {
+  return new Promise(function (resolve, reject) {
+    resolve('foo');
+  });
 }
 
-run(function* (callbcack) {
-  var dirFiles;
-  var firstFile;
-  // catch exception
-  try {
-    dirFiles = yield fs.readdir('NoNoNoNo', callbcack); // No such dir  
-    firstFile = dirFiles[0]; // TypeError: Cannot read property '0' of undefined
+function run (generator) {
+  // your code goes here
+  var it = generator();
+
+  function next() {
+    var promise = it.next().value;  
+    if (promise.then) {
+      promise
+        .then(function(result){
+          it.next(result);
+        })
+        .catch(function(err){
+          it.throw(err);
+        });
+    }
   }
-  catch(e) {
-    firstFile = null;
-  }
-  console.log(firstFile);
- });
+  next();
+}
+
+run(function* () {
+  // improve: errors?
+  var foo = yield askFoo();
+  console.log(foo);
+});
